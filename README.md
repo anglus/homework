@@ -82,9 +82,9 @@ sudo /usr/bin/mysql_secure_installation
 
 After you enter the command, you will be asked to enter the password you set for your MySQL **root** account. Go ahead and enter your *MySQL* root password. If you did not set a MySQL root password earlier, you should simply press `ENTER`.
 
-Next, you will be asked if you want to change your password. If you're happy with your password, just type <^>n<^> for "no". If you did not set a password earlier, type <^>y<^> for "yes" and enter your new MySQL root password, and then enter it again at the prompt.
+Next, you will be asked if you want to change your password. If you're happy with your password, just type <^>n<^> for "no". If you did not set a password earlier, type `<^>y<^>` for "yes" and enter your new MySQL root password, and then enter it again at the prompt.
 
-The following questions will ask if you want to remove anonymous users, disallow remote root logins, remove the test database and access to it, and reload the privilege tables so that these changes will take effect immediately. Type <^>y<^> for "yes" to answer each question. 
+The following questions will ask if you want to remove anonymous users, disallow remote root logins, remove the test database and access to it, and reload the privilege tables so that these changes will take effect immediately. Type `<^>y<^>` for "yes" to answer each question. 
 
 Now that our database is initialized and secured, we are ready to create a new database and user for use by MediaWiki. Let's start by logging in to MySQL as the **root** user:
 
