@@ -531,10 +531,10 @@ sudo ln -s <^>/usr/share/mediawiki/<^> /var/www/<^>mediawiki<^>
 **Note:** The first argument to the `ln -s` command is the path to the existing file or directory we want to link to, and the second argument is the path to the link we are creating. Make sure you use full path names with this command.
 <$>
 
-The `/usr/share/mediawiki` directory is owned by the `sudo` user who created it. Let's change ownership of the directory to **www-data**, `lighttpd`'s system user:
+The `<^>/usr/share/mediawiki<^>` directory is owned by the `sudo` user who created it. Let's change ownership of the directory to **www-data**, `lighttpd`'s system user:
 
 ```command
-sudo chown -R www-data:www-data /usr/share/mediawiki
+sudo chown -R www-data:www-data <^>/usr/share/mediawiki<^>
 ```
 
 Now MediaWiki should be Internet-accessible. However, we still need to run MediaWiki's configuration script to set up our wiki. Point your web browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>/mw-config/index.php` (where <^>mediawiki<^> is the directory or symbolic link under `/var/www` that you created previously) to begin creating the configuration file. You should be taken to a page that is titled **MediaWiki <^>1.24.2<^> installation** and allows you to select languages for the installation process, and for the wiki. This is the first page of the installer. Select your languages and click `Continue`. 
@@ -551,13 +551,25 @@ The **Options** page has several settings you may want to change. First, the def
 
 When you are finished setting up your options, click `Continue`. On the **Install** page, you will be given the option of going back to make more changes or continuing with the installation. If you are satisfied with your choices, click `Continue`. You will see a list of tasks performed by the installation script. Click `Continue`, and you will be taken to the **Complete!** page, where the MediaWiki configuration file, `LocalSettings.php`, will begin downloading to your local computer. Make sure the file has been fully downloaded to your computer before you close out of the **Complete!** page.
 
-In order to finish setting up MediaWiki, we need to copy this file to the MediaWiki directory on our droplet. We can do this by selecting and copying the file's contents and pasting them into a text editor on our droplet. Begin by opening the LocalSettings.php file in a text editor on your local computer. Select the entire contents of the file and copy them. Now open a new file named `<^>/usr/share/mediawiki/<^>LocalSettings.php` in a text editor on your droplet:
+In order to finish setting up MediaWiki, we need to copy this file to our droplet. We could put it in our MediaWiki directory, but let's put it in a more convenient and secure location: `/etc/mediawiki`. Enter the following command to create the new directory:
 
 ```command
-sudo nano <^>/usr/share/mediawiki/<^>LocalSettings.php
+sudo mkdir /etc/mediawiki
 ```
 
-Finally, paste the contents of the file into your editor and save the new file. Now you can enter your new wiki. Point your browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>` (substituting your own droplet's IP address and MediaWiki directory) and you should be taken to the main page of your wiki. Click on the login link in the upper right-hand corner of the page and enter the administrator account name and password you chose during the MediaWiki installation. Once you are logged in, you can create a new article by typing its name into the search bar on your wiki. If the page does not already exist, you will be asked if you want to create a new page on your wiki. Go ahead and start editing.
+We can copy the `LocalSettings.php` file to our droplet by selecting and copying the file's contents and pasting them into a text editor on our droplet. Begin by opening the LocalSettings.php file in a text editor on your local computer. Select the entire contents of the file and copy them. Now open a new file named `/etc/mediawiki/LocalSettings.php` in a text editor on your droplet:
+
+```command
+sudo nano /etc/mediawiki/LocalSettings.php
+```
+
+Paste the contents of the file into your editor and save the new file. Finally, make a link to the file from your MediaWiki directory:
+
+```command
+sudo ln -s /etc/mediawiki/LocalSettings.php <^>/usr/share/mediawiki/<^>
+```
+
+Now you can enter your new wiki. Point your browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>` (substituting your own droplet's IP address and MediaWiki directory) and you should be taken to the main page of your wiki. Click on the login link in the upper right-hand corner of the page and enter the administrator account name and password you chose during the MediaWiki installation. Once you are logged in, you can create a new article by typing its name into the search bar on your wiki. If the page does not already exist, you will be asked if you want to create a new page on your wiki. Go ahead and start editing.
 
 ## Step Five &mdash; Configure MediaWiki for Short URLS
 
