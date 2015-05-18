@@ -153,7 +153,7 @@ The output should look something like this:
 | performance_schema |
 | wikidb             |
 +--------------------+
-4 rows in set (0.01 sec)
+4 rows in set (0.00 sec)
 ```
 
 You can see your new **wikiuser** MySQL user using the following command:
@@ -186,7 +186,7 @@ exit
 
 ## Step Three &mdash; Configure PHP-FPM and Lighttpd
 
-Now that MySQL is configured for use with MediaWiki, we need to edit a few files to allow the lightppd web server and PHP-FPM to work together. First, if we need to, we can edit `/etc/php5/fpm/php.ini` to  change some defaults for PHP-FPM. Next we need to edit `/etc/lighttpd/conf-available/15-fastcgi-php.conf` to configure PHP-FPM support in `lighttpd`. Then we need run a couple of scripts to make our changes take effect. Lastly we need to restart `lighttpd` and test PHP-FPM using our web browser. In addition, we may install some extra PHP modules to provide extra functionality for MediaWiki.
+Now that MySQL is configured for use with MediaWiki, we need to edit a few files to allow the lightppd web server and PHP-FPM to work together. First, if we need to, we can edit `/etc/php5/fpm/php.ini` to  change some defaults for PHP-FPM. Next, we need to edit `/etc/lighttpd/conf-available/15-fastcgi-php.conf` to configure PHP-FPM support in `lighttpd`. Then we need run a couple of scripts to make our changes take effect. Finally, we need to restart `lighttpd` and test PHP-FPM using our web browser. In addition, we may install some extra PHP modules to provide extra functionality for MediaWiki.
 
 Our web server should have started when we installed `lighttpd`. Enter the IP address of your Ubuntu droplet into the address bar of your web browser. If you don't recall your droplet's IP address, a quick way to find it is by entering `hostname -I` on your droplet's command line:
 
@@ -198,7 +198,7 @@ You should see output similar to the following (the numbers will be different):
 
 ```
 [secondary_label Output]
-<^>111.111.111.111 11.111.111.111<^>
+<^>111.111.111.111 10.111.111.111<^>
 ```
 The first IP address (<^>111.111.111.111<^> in this example) should be your public IP address. Copy it into your browser and press `ENTER`. You should see `lighttpd`'s default placeholder page, which looks something like this:
 
@@ -257,7 +257,7 @@ file_uploads = On
 [...]
 ```
 
-This block of text (or "stanza") should be a little bit above the `upload_max_filesize` stanza. Type `CTRL-W` and then `uploads`  in `nano` if you need to find it. If you *don't* want to allow other people to upload files to your wiki, and you don't need to be able to upload images to your wiki from a remote computer, you can disable file uploads by inserting a semicolon before the line that reads `file_uploads = On`:
+This block of text (or "stanza") should be two stanzas above the `upload_max_filesize` stanza. If you *don't* want to allow other people to upload files to your wiki, and you don't need to be able to upload images to your wiki from a remote computer, you can disable file uploads by inserting a semicolon before the line that reads `file_uploads = On`:
 
 ```
 [secondary_label /etc/php5/fpm/php.ini]
@@ -268,7 +268,7 @@ This block of text (or "stanza") should be a little bit above the `upload_max_fi
 [...]
 ```
 
-When PHP-FPM reads the `/etc/php5/fpm/php.ini` configuration file, it ignores any line that begins with a semicolon.
+When PHP-FPM reads the `/etc/php5/fpm/php.ini` configuration file, it ignores any line that begins with a semicolon. Save the file by typing `CTRL-O` and `ENTER`, and exit `nano` by typing `CTRL-X`
 
 Now we're ready to configure `lighttpd` to use PHP-FPM. We will need to edit the file located at `/etc/lighttpd/conf-available/15-fastcgi-php.conf`. This file contains PHP-FastCGI settings for use with `lighttpd`. First, make a backup of the file by typing the following command:
 
@@ -295,6 +295,7 @@ fastcgi.server += ( ".php" =>
 	((
 		"bin-path" => "/usr/bin/php-cgi",
 		"socket" => "/var/run/lighttpd/php.socket",
+		"max-procs" => 1,
 		"bin-environment" => ( 
 			"PHP_FCGI_CHILDREN" => "4",
 			"PHP_FCGI_MAX_REQUESTS" => "10000"
@@ -309,7 +310,7 @@ fastcgi.server += ( ".php" =>
 
 This configuration file is for use with PHP's older FastCGI implementation. PHP-FPM really only needs to use two variables from this file: `socket` and `broken-scriptfilename`. You may comment out or remove all the other lines between the double parentheses. You will also need to change the value of `"socket"` from `"/var/run/lighttpd/php.socket"` to `"/var/run/php5-fpm.sock"`.
 
-In `/etc/lighttpd/conf-available/15-fastcgi-php.conf` you can comment out a line by putting a hash (`#`, also known in North America as a "pound sign") at the beginning. When lighttpd runs and reads this configuration file, it ignores any line that begins with `#`. In `nano` you can remove a line by typing `CTRL-K`. Go ahead and edit the file as described above. When you finish, the section between the double parentheses should appear like this:
+In `/etc/lighttpd/conf-available/15-fastcgi-php.conf` you can comment out a line by putting a hash (`#`, also known in North America as a "pound sign") at the beginning. When `lighttpd` runs and reads this configuration file, it ignores any line that begins with `#`. In `nano` you can remove a line by typing `CTRL-K`. Go ahead and edit the file as described above, and then save the file and exit `nano`. When you finish, the section between the double parentheses should appear like this:
 
 ```
 [secondary_label /etc/lighttpd/conf-available/15-fastcgi-php.conf]
@@ -342,14 +343,19 @@ or like this:
 [...]
 ```
 
-```[note]
+<$>[note]
 **Note:** Be certain at least to disable or remove the `bin-path` line. The file `/usr/bin/php-cgi` may not exist on your system, PHP-FPM doesn't need it to run, and if the line is not disabled, you may have trouble connecting to your web server.
-```
+<$>
 
 Now that we've edited `lighttpd`'s PHP-FastCGI configuration file to use PHP-FPM, we need to run a couple of scripts to make sure `lighttpd` loads its FastCGI and PHP-FastCGI configuration files when it runs. The file we just edited is located in the `/etc/lighttpd/conf-available` directory. Files in this directory will be ignored when `lightppd` runs, but files in the `/etc/lighttpd/conf-enabled` directory will be loaded. Enable FastCGI in `lightppd` by entering the following commands:
 
 ```command
 sudo lighttpd-enable-mod fastcgi
+```
+
+and
+
+```command
 sudo lighttpd-enable-mod fastcgi-php
 ```
 
@@ -380,13 +386,13 @@ sudo service php5-fpm restart
 sudo service lighttpd restart
 ```
 
-We can check if PHP-FPM is working by creating a PHP file in `/var/www`. On Ubuntu the Lighttpd web server uses the `/var/www/` directory as its default *document root*. The document root is a directory used for storing web pages and other files that are made accessible to the public through the web server. There should already be a few HTML files, such as `index.html` and `index.lighttpd.html`, in your document root. These are placeholder pages created when you installed `lighttpd`. Now, let's use our text editor to create a PHP script called `info.php` to test out PHP-FPM:
+We can check if PHP-FPM is working by creating a PHP file in `/var/www`. On Ubuntu the Lighttpd web server uses the `/var/www/` directory as its default *document root*. The document root is a directory used for storing web pages and other files that are made accessible to the public through the web server. There should already be an HTML file, `index.lighttpd.html`, in your document root. This is the placeholder page created when you installed `lighttpd`. Now, let's use our text editor to create a PHP script called `info.php` to test out PHP-FPM:
 
 ```command
 sudo nano /var/www/info.php
 ```
 
-Add the following text to the file:
+Add the following text and save the file:
 
 ```
 [secondary_label /var/www/info.php]
@@ -397,7 +403,7 @@ Add the following text to the file:
 
 We can test this script by pointing our web browser to `http://<^>111.111.111.111<^>/info.php`. (Replace "111.111.111.111" with your droplet's IP address.) You should see something like this:
 
-![PHP Version 5.5.9-1ubuntu4.9 ...]()
+![PHP Version 5.5.9-1ubuntu4.9 ... six .ini files parsed](http://i.imgur.com/vAGlJ3J.png)
 
 You're almost ready to install MediaWiki. However, before we go on, let's install a few additional PHP modules to extend the functionality available to MediaWiki. You can see the PHP modules available in Ubuntu using `apt-cache`:
 
@@ -449,11 +455,13 @@ sudo service php5-fpm restart
 
 Now point your web browser to `http://<^>111.111.111.111<^>/info.php` (remember to use your droplet's IP address), or reload the page if you are already there. This time the page should be longer, and the "Additional .ini files parsed" table should have additional entries:
 
-![PHP Version 5.5.9-1ubuntu4.9 ...]()
+![PHP Version 5.5.9-1ubuntu4.9 ... nine .ini files parsed](http://i.imgur.com/DWGbBW8.png)
 
 As you can see, the `info.php` file contains quite a bit of information about your system. It is also publicly accessible and easy to find for anyone with a bit of Internet savvy. Now that you have tested PHP-FPM, it's a good idea to remove the `info.php` file. Type this command to remove `info.php`:
 
+```command
 sudo rm /var/www/info.php
+```
 
 ## Step Four &mdash; Install MediaWiki
 
