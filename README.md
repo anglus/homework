@@ -551,7 +551,7 @@ The **Options** page has several settings you may want to change. First, the def
 
 When you are finished setting up your options, click `Continue`. On the **Install** page, you will be given the option of going back to make more changes or continuing with the installation. If you are satisfied with your choices, click `Continue`. You will see a list of tasks performed by the installation script. Click `Continue`, and you will be taken to the **Complete!** page, where the MediaWiki configuration file, `LocalSettings.php`, will begin downloading to your local computer. Make sure the file has been fully downloaded to your computer before you close out of the **Complete!** page.
 
-In order to finish setting up MediaWiki, we need to copy this file to our droplet. We could put it in our MediaWiki directory, but let's put it in a more convenient and secure location: `/etc/mediawiki`. Enter the following command to create the new directory:
+In order to finish setting up MediaWiki, we need to copy this file to our droplet. We could put the file in our MediaWiki directory, but let's put it in a more convenient location: `/etc/mediawiki`. Enter the following command to create the new directory:
 
 ```command
 sudo mkdir /etc/mediawiki
@@ -563,7 +563,19 @@ We can copy the `LocalSettings.php` file to our droplet by selecting and copying
 sudo nano /etc/mediawiki/LocalSettings.php
 ```
 
-Paste the contents of the file into your editor and save the new file. Finally, make a link to the file from your MediaWiki directory:
+Paste the contents of your local file into your editor and save the new file. Because you edited the file with `sudo`, **root** has ownership of the file. Change ownership of the file to **www-data**:
+
+```command
+sudo chown www-data:www-data /etc/mediawiki/LocalSettings.php
+```
+
+Change the permissions so only **www-data** (and **root**) can read the file:
+
+```command
+sudo chmod 600 /etc/mediawiki/LocalSettings.php
+```
+
+Finally, make a link to the file from your MediaWiki directory:
 
 ```command
 sudo ln -s /etc/mediawiki/LocalSettings.php <^>/usr/share/mediawiki/<^>
