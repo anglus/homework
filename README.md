@@ -2,7 +2,7 @@
 
 ### Introduction
 
-MediaWiki is a popular open source wiki platform that can be used for public or internal collaborative content publishing.  MediaWiki is used for many of the most popular wikis on the Internet, including Wikipedia, the site that the project was originally designed to serve.
+[MediaWiki](http://www.mediawiki.org/wiki/MediaWiki) is a popular open source wiki platform that can be used for public or internal collaborative content publishing.  MediaWiki is used for many of the most popular wikis on the Internet, including Wikipedia, the site that the project was originally designed to serve.
 
 In this guide, we will be setting up the latest version of MediaWiki on an Ubuntu 14.04 server.  We will use the lighttpd web server to make the actual content available, PHP-FPM to handle dynamic processing, and the MySQL database to store our wiki's data.
 
@@ -467,7 +467,7 @@ sudo rm /var/www/info.php
 
 Now that we have installed and configured all our server components, and tested them to make sure they are functioning, we are ready to install MediaWiki. We could use `apt-get` to install MediaWiki, but unfortunately the version of MediaWiki available through Ubuntu's software repository is rather outdated, so instead we will be downloading the latest stable version of MediaWiki directly from the MediaWiki website.
 
-At the time of writing this tutorial the latest stable version of MediaWiki is 1.24.2. You can find the latest stable version of MediaWiki by pointing your web browser to the MediaWiki [Download page](http://www.mediawiki.org/wiki/Download). There you will find a link to the latest stable version of the software. The link should point to a URL that looks something like this: [http://releases.wikimedia.org/mediawiki/<^>1.24<^>/mediawiki-<^>1.24.2<^>.tar.gz](http://releases.wikimedia.org/mediawiki/1.24/mediawiki-1.24.2.tar.gz). We want to download this software to our `sudo` user's home directory on our droplet.
+At the time of writing this tutorial, the latest stable version of MediaWiki is 1.24.2. You can find the latest stable version of MediaWiki by pointing your web browser to the MediaWiki [Download page](http://www.mediawiki.org/wiki/Download). There you will find a link to the latest stable version of the software. The link should point to a URL that looks something like this: [http://releases.wikimedia.org/mediawiki/<^>1.24<^>/mediawiki-<^>1.24.2<^>.tar.gz](http://releases.wikimedia.org/mediawiki/1.24/mediawiki-1.24.2.tar.gz). We want to download this software to our `sudo` user's home directory on our droplet.
 
 Your home directory should look something like `/home/<^>sammy<^>`, where **sammy** is your username. You can show what directory you are in using the `pwd` ("print working directory") command:
 
@@ -490,9 +490,9 @@ cd
 
 By default, `cd` changes your current directory to your home directory.
 
-```[note]
+<$>[note]
 **Note:** If you are in your home directory, and you are using Ubuntu's default `bash` shell prompt, your prompt should look something like `<^>sammy<^>@<^>florin<^>:~$`, where **sammy** is your username and **florin** is your droplet's hostname. The tilde (~) indicates your home directory.
-```
+<$>
 
 Now that we have made certain that we're in our home directory, let's download the MediaWiki software package. In order to download this software package to your droplet, you will need to use a command-line downloader such as `wget` or `curl`. On your droplet's command line, type "wget" followed by the URL of the latest stable MediaWiki version:
 
@@ -508,35 +508,37 @@ Now that we have the MediaWiki software package in our home directory, let's ext
 tar xvzf mediawiki-<^>1.24.2<^>.tar.gz
 ```
 
-This will create a directory named `mediawiki-<^>1.24.2<^>` under your home directory. We want to place the contents of this directory in a place that is publicly accessible through our web server. You will recall that the lighttpd web server's document root is `/var/www`. If we move the contents of the MediaWiki directory to `/var/www`, you will be able to access your wiki simply by entering `http://<^>111.111.111.111<^>` (replace the text in red with the IP address of your droplet) into your web browser's address bar. Article pages will appear in the form `http://<^>111.111.111.111<^>/index.php?title=<^>Article<^>`. However, the MediaWiki project recommends against putting the MediaWiki files directly in the document root because they will conflict with other files and directories located in the document root. Instead, you may place the files in a new subdirectory of the document root, such as `/var/www/mediawiki` or `/var/www/w`. Article pages would then appear as `http://<^>111.111.111.111<^>/mediawiki/index.php?title=<^>Article<^>` or `http://<^>111.111.111.111<^>/w/index.php?title=<^>Article<^>`, respectively. You can also move the files to another location on your system, such as `/home/<^>sammy<^>/public_html/<^>mediawiki<^>`, `/usr/share/<^>mediawiki<^>`, or `/var/lib/<^>mediawiki<^>`, and then create a symbolic link to the directory from `/var/www/<^>mediawiki<^>`. For the purpose of this tutorial, we will be moving the files to `/usr/share/mediawiki` and creating a symbolic link from `/var/www/mediawiki`, but you may simply move the files to `/var/www/<^>mediawiki<^>`, if you prefer. Let's start by moving the files to `/usr/share/mediawiki`:
+This will create a directory named `mediawiki-<^>1.24.2<^>` under your home directory. We want to place the contents of this directory in a place that is publicly accessible through our web server. You will recall that the lighttpd web server's document root is `/var/www`. If we move the contents of the MediaWiki directory to `/var/www`, you will be able to access your wiki simply by entering `http://<^>111.111.111.111<^>` (replace the text in red with the IP address of your droplet) into your web browser's address bar. Article pages will appear in the form `http://<^>111.111.111.111<^>/index.php?title=<^>Article<^>`. However, the MediaWiki project recommends against putting the MediaWiki files directly in the document root because they will conflict with other files and directories located in the document root.
+
+Instead, you may place the files in a new subdirectory of the document root, such as `/var/www/mediawiki` or `/var/www/w`. Article pages would then appear as `http://<^>111.111.111.111<^>/mediawiki/index.php?title=<^>Article<^>` or `http://<^>111.111.111.111<^>/w/index.php?title=<^>Article<^>`, respectively. You can also move the files to another location on your system, such as `/home/<^>sammy<^>/public_html/<^>mediawiki<^>`, `/usr/share/<^>mediawiki<^>`, or `/var/lib/<^>mediawiki<^>`, and then create a symbolic link to the directory from `/var/www/<^>mediawiki<^>`. For the purpose of this tutorial, we will be moving the files to `/usr/share/mediawiki` and creating a symbolic link from `/var/www/mediawiki`, but you may simply move the files to `/var/www/<^>mediawiki<^>`, if you prefer. Let's start by moving the files to `/usr/share/mediawiki`:
 
 ```command
-mv mediawiki-<^>1.24.2<^> <^>/usr/share/mediawiki<^>
+sudo mv mediawiki-<^>1.24.2<^> <^>/usr/share/mediawiki<^>
 ```
 
 Now create a symbolic link from `/var/www/mediawiki` to `/usr/share/mediawiki`:
 
 ```command
-ln -s <^>/usr/share/mediawiki/<^> /var/www/<^>mediawiki<^>
+sudo ln -s <^>/usr/share/mediawiki/<^> /var/www/<^>mediawiki<^>
 ```
 
-```[note]
+<$>[note]
 **Note:** The first argument to the `ln -s` command is the path to the existing file or directory we want to link to, and the second argument is the path to the link we are creating. Make sure you use full path names with this command.
-```
+<$>
 
-Now MediaWiki should be Internet-accessible. However, we still need to run MediaWiki's configuration script to set up our wiki. Point your web browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>/mw-config/index.php` (where <^>mediawiki<^> is the directory or symbolic link under `/var/www` that you created previously) to begin creating the configuration file. You should be taken to a page that is titled **MediaWiki <^>1.24.2<^> installation** and allows you to select languages for the installation process, and for the wiki. This is the first page of the installer. Select your languages and click **Continue**. 
+Now MediaWiki should be Internet-accessible. However, we still need to run MediaWiki's configuration script to set up our wiki. Point your web browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>/mw-config/index.php` (where <^>mediawiki<^> is the directory or symbolic link under `/var/www` that you created previously) to begin creating the configuration file. You should be taken to a page that is titled **MediaWiki <^>1.24.2<^> installation** and allows you to select languages for the installation process, and for the wiki. This is the first page of the installer. Select your languages and click `Continue`. 
 
-The next page is titled **Welcome to MediaWiki!** If you have installed the software needed by MediaWiki, you should see a line of green text that reads: **The environment has been checked. You can install MediaWiki.** Click **Continue**
+The next page is titled **Welcome to MediaWiki!** If you have installed the software needed by MediaWiki, you should see a line of green text that reads: **The environment has been checked. You can install MediaWiki.** Click `Continue`
 
-In the **Database settings** page, you can leave the settings as is and continue on. In the **Connect to database** page you need to enter the settings you used when you set up MySQL. We created a database named `wikidb` and a MySQL user named **wikiuser**, and set a password for **wikiuser**. Enter these three values as your **Database name**, **Database username**, and **Database password**, as in the image below:
+In the **Connect to database** page, set the **Database host** to `localhost`. You also need to enter the settings you used when you set up MySQL. We created a database named `wikidb` and a MySQL user named **wikiuser**, and set a password for **wikiuser**. Enter these three values as your **Database name**, **Database username**, and **Database password**, as in the image below:
 
 ![MySQL settings &mdash; Database name: wikidb, Database username: wikiuser, Database password: ************](http://i.imgur.com/kjXPq04.png)
 
-Continue on to the **Name** page. Here you can name your wiki and set up the administrator account. Choose a suitable name for your wiki, give your administrator account a name (e.g. "Admin"), a strong password, and a valid contact e-mail address. Make sure to remember your account name and password because you will need them to log in to your wiki. At this point you are given the option of completing the setup or continuing on to the next page. Contiue on to the next page.
+In the **Database settings** page, you can leave the settings as is and continue on to the **Name** page. Here you can name your wiki and set up the administrator account. Choose a suitable name for your wiki, give your administrator account a name (e.g. "Admin"), a strong password, and a valid contact e-mail address. Make sure to remember your account name and password because you will need them to log in to your wiki. At this point you are given the option of completing the setup or continuing on to the next page. Make sure the `Ask me more questions` radio button is selected, and continue on to the next page.
 
 The **Options** page has several settings you may want to change. First, the default emergency contact e-mail address is something like `apache@<^>111.111.111.111<^>`. Change this to a valid e-mail address from which you can send mail. Second, check **Enable file uploads** if you want to be able to upload images or other files to your wiki from your own computer. Also, if you have a logo for your wiki, you can enter its location under **Logo URL**. Lastly, under **Settings for object caching**, select "PHP object caching (APC, XCache or WinCache)", since we installed XCache earlier. 
 
-When you are finished setting up your options, click **Continue**. On the **Install** page, you will be given the option of going back to make more changes or continuing with the installation. If you are satisfied with your choices, click **Continue**. You will see a list of tasks performed by the installation script, and then you will be taken to the **Complete!** page, where the MediaWiki configuration file, `LocalSettings.php`, will begin downloading to your local computer. Make sure the file has been fully downloaded to your computer before you close out of the **Complete!** page.
+When you are finished setting up your options, click `Continue`. On the **Install** page, you will be given the option of going back to make more changes or continuing with the installation. If you are satisfied with your choices, click `Continue`. You will see a list of tasks performed by the installation script. Click `Continue`, and you will be taken to the **Complete!** page, where the MediaWiki configuration file, `LocalSettings.php`, will begin downloading to your local computer. Make sure the file has been fully downloaded to your computer before you close out of the **Complete!** page.
 
 In order to finish setting up MediaWiki, we need to copy this file to the MediaWiki directory on our droplet. We can do this by selecting and copying the file's contents and pasting them into a text editor on our droplet. Begin by opening the LocalSettings.php file in a text editor on your local computer. Select the entire contents of the file and copy them. Now open a new file named `<^>/usr/share/mediawiki/<^>LocalSettings.php` in a text editor on your droplet:
 
@@ -609,7 +611,11 @@ url.rewrite-once = (
 )
 ```
 
-Replace <^>mediawiki<^> with the directory or symbolic link under `/var/www` where the MediaWiki files are located, if you used a different name. The second line above tells `lighttpd` to point URLs in the form `http://<^>111.111.111.111<^>/wiki/<^>Article<^>` to articles in `/var/www/<^>mediawiki<^>`. The third line tells `lighttpd` send web browsers to your wiki's home page when they try to access your web server's document root.
+Replace <^>mediawiki<^> with the directory or symbolic link under `/var/www` where the MediaWiki files are located, if you used a different name. The second line above tells `lighttpd` to point URLs in the form `http://<^>111.111.111.111<^>/wiki/<^>Article<^>` to articles in `/var/www/<^>mediawiki<^>`. The third line tells `lighttpd` send web browsers to your wiki's home page when they try to access your web server's document root. Reload `lighttpd`:
+
+```command
+sudo service lighttpd restart
+```
 
 Now point your Web browser to `http://<^>111.111.111.111<^>` (replace with your droplet's IP address). You should be sent to `http://<^>111.111.111.111<^>/wiki/Main_Page`.
 
