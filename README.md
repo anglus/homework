@@ -183,6 +183,11 @@ When you are done using MySQL, type `quit` or `exit` to return to the Linux comm
 ```custom_prefix(mysql>)
 exit
 ```
+A record of your MySQL commands is recorded in the `.mysql_history` file in your home directory, including the password you chose for **wikiuser**. Remove it by typing the following command:
+
+```command
+rm ~/.mysql_history
+```
 
 ## Step Three &mdash; Configure PHP-FPM and Lighttpd
 
