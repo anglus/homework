@@ -24,7 +24,7 @@ We can install software on Ubuntu using `apt`. `Apt` is the default package mana
 sudo apt-get update
 ```
 
-If this is your first time using `sudo`, you will be prompted for a password after you enter the above command. Enter the password of the user you are logged in as. You will see a list of URLs scroll by. These are the locations from which `apt-get` retrieves information about the currently available software packages. It may take a few minutes for the command to complete. Once it does, your database should be up-to-date.
+If this is your first time using `sudo`, you will be prompted for a password after you enter the above command. Enter the password of the user you are logged in as. You will see a list of URLs scroll by. These are the locations from which `apt-get` retrieves information about the currently available software packages. When the list stops scrolling, your database should be up-to-date.
 
 Now you are ready to install `lighttpd`. [Lighttpd](http://www.lighttpd.net/) (pronounced "lighty") is an open source, standards-compliant web server optimized for high-performance environments. Install `lighttpd` by entering the following command:
 
@@ -50,7 +50,7 @@ Lastly, we will install `mysql-server` and `php-mysql`. [MySQL](http://www.mysql
 sudo apt-get install php5-mysql mysql-server
 ```
 
-After you enter this command, `apt-get` will download the two packages specifed, as well as any additional packages required by `mysql-server`. After you have installed `mysql-server`, you should see the following screen prompting you to set a password for your MySQL **root** user.
+After you enter this command, `apt-get` will download the two packages specifed, as well as any additional packages required by `mysql-server`. While you are installing `mysql-server`, you should see the following screen prompting you to set a password for your MySQL **root** user.
 
 ![Enter a password for your MySQL root user and then select <Ok>](http://i.imgur.com/JY5ct8H.png?1)
 
