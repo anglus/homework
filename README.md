@@ -526,6 +526,12 @@ sudo ln -s <^>/usr/share/mediawiki/<^> /var/www/<^>mediawiki<^>
 **Note:** The first argument to the `ln -s` command is the path to the existing file or directory we want to link to, and the second argument is the path to the link we are creating. Make sure you use full path names with this command.
 <$>
 
+The `/usr/share/mediawiki` directory is owned by the `sudo` user who created it. Let's change ownership of the directory to **www-data**, `lighttpd`'s system user:
+
+```command
+sudo chown -R www-data:www-data /usr/share/mediawiki
+```
+
 Now MediaWiki should be Internet-accessible. However, we still need to run MediaWiki's configuration script to set up our wiki. Point your web browser to `http://<^>111.111.111.111<^>/<^>mediawiki<^>/mw-config/index.php` (where <^>mediawiki<^> is the directory or symbolic link under `/var/www` that you created previously) to begin creating the configuration file. You should be taken to a page that is titled **MediaWiki <^>1.24.2<^> installation** and allows you to select languages for the installation process, and for the wiki. This is the first page of the installer. Select your languages and click `Continue`. 
 
 The next page is titled **Welcome to MediaWiki!** If you have installed the software needed by MediaWiki, you should see a line of green text that reads: **The environment has been checked. You can install MediaWiki.** Click `Continue`
